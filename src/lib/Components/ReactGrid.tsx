@@ -23,20 +23,11 @@ import { StateProvider } from "./StateProvider";
 export class ReactGrid extends React.Component<ReactGridProps, State> {
   private updateState = (state: State) => this.setState(state);
   private stateUpdater = (modifier: StateModifier) =>
-    handleStateUpdate(
-      modifier(this.state) as State,
-      this.state,
-      this.props,
-      this.updateState
-    );
-  private pointerEventsController = new PointerEventsController(
-    this.stateUpdater
-  );
-  private eventHandlers = new EventHandlers(
-    this.stateUpdater,
-    this.pointerEventsController
-  );
+    handleStateUpdate(modifier(this.state) as State, this.state, this.props, this.updateState);
+  private pointerEventsController = new PointerEventsController(this.stateUpdater);
+  private eventHandlers = new EventHandlers(this.stateUpdater, this.pointerEventsController);
   private cellMatrixBuilder = new CellMatrixBuilder();
+  // 초기 state 초기화
   state: State = {
     update: this.stateUpdater,
     ...defaultStateFields,
@@ -51,10 +42,7 @@ export class ReactGrid extends React.Component<ReactGridProps, State> {
       .getCellMatrix(),
   };
 
-  static getDerivedStateFromProps(
-    props: ReactGridProps,
-    state: State
-  ): State | null {
+  static getDerivedStateFromProps(props: ReactGridProps, state: State): State | null {
     try {
       return getDerivedStateFromProps(props, state);
     } catch (error) {
@@ -79,13 +67,10 @@ export class ReactGrid extends React.Component<ReactGridProps, State> {
       };
     });
   };
-  
+
   componentDidUpdate(prevProps: ReactGridProps, prevState: State): void {
     if (!prevState.reactGridElement && this.state.reactGridElement) {
-      this.state.scrollableElement?.addEventListener(
-        "scroll",
-        this.eventHandlers.scrollHandler
-      );
+      this.state.scrollableElement?.addEventListener("scroll", this.eventHandlers.scrollHandler);
     }
     componentDidUpdate(prevProps, prevState, this.state);
   }
@@ -95,16 +80,10 @@ export class ReactGrid extends React.Component<ReactGridProps, State> {
   }
 
   componentWillUnmount(): void {
-    window.removeEventListener(
-      "resize",
-      this.eventHandlers.windowResizeHandler
-    );
-    this.state.scrollableElement?.removeEventListener(
-      "scroll",
-      this.eventHandlers.scrollHandler
-    );
+    window.removeEventListener("resize", this.eventHandlers.windowResizeHandler);
+    this.state.scrollableElement?.removeEventListener("scroll", this.eventHandlers.scrollHandler);
     this.setState({
-      contextMenuPosition: { top: -1, left: -1 }
+      contextMenuPosition: { top: -1, left: -1 },
     });
   }
 

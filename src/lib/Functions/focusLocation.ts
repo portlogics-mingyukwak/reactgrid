@@ -1,70 +1,62 @@
-import { State, } from '../Model/State';
-import { Location } from '../Model/InternalModel';
-import { tryAppendChange } from './tryAppendChange';
-import { getCompatibleCellAndTemplate } from './getCompatibleCellAndTemplate';
-import { areLocationsEqual } from './areLocationsEqual';
-import { resetSelection } from './selectRange';
-import { keyCodes } from './keyCodes';
-
+import { State } from "../Model/State";
+import { Location } from "../Model/InternalModel";
+import { tryAppendChange } from "./tryAppendChange";
+import { getCompatibleCellAndTemplate } from "./getCompatibleCellAndTemplate";
+import { areLocationsEqual } from "./areLocationsEqual";
+import { resetSelection } from "./selectRange";
+import { keyCodes } from "./keyCodes";
 
 export function focusLocation(state: State, location: Location, applyResetSelection = true, keyCode?: keyCodes): State {
-    // Need to determine if there is an edited cell &&The cell gets focus &&did not press Enter
-    if (
-      state.focusedLocation &&
-      state.currentlyEditedCell &&
-      keyCode !== keyCodes.ENTER
-    ) {
-      state = tryAppendChange(
-        state,
-        state.focusedLocation,
-        state.currentlyEditedCell
-      );
-    }
+  // Need to determine if there is an edited cell &&The cell gets focus &&did not press Enter
+  if (state.focusedLocation && state.currentlyEditedCell && keyCode !== keyCodes.ENTER) {
+    state = tryAppendChange(
+      // edited cell을 이전 상태와 비교해서 변경사항이 있다면 queuedCellChanges에 push, handleStateUpdate에서 처리 후 state 업데이트
+      state,
+      state.focusedLocation,
+      state.currentlyEditedCell
+    );
+  }
 
-    if (!state.props) {
-        throw new Error(`"props" field on "state" object should be initiated before possible location focus`);
-    }
-    
-    
-    const { onFocusLocationChanged, onFocusLocationChanging, focusLocation } = state.props;
+  if (!state.props) {
+    throw new Error(`"props" field on "state" object should be initiated before possible location focus`);
+  }
 
-    const { cell, cellTemplate } = getCompatibleCellAndTemplate(state, location);
-    const cellLocation = { rowId: location.row.rowId, columnId: location.column.columnId };
+  const { onFocusLocationChanged, onFocusLocationChanging, focusLocation } = state.props;
 
-    const isChangeAllowedByUser = !onFocusLocationChanging || onFocusLocationChanging(cellLocation);
+  const { cell, cellTemplate } = getCompatibleCellAndTemplate(state, location);
+  const cellLocation = { rowId: location.row.rowId, columnId: location.column.columnId };
 
-    const isCellTemplateFocusable = !cellTemplate.isFocusable || cellTemplate.isFocusable(cell);
+  const isChangeAllowedByUser = !onFocusLocationChanging || onFocusLocationChanging(cellLocation);
 
-    const forcedLocation = focusLocation
-        ? state.cellMatrix.getLocationById(focusLocation.rowId, focusLocation.columnId)
-        : undefined;
+  const isCellTemplateFocusable = !cellTemplate.isFocusable || cellTemplate.isFocusable(cell);
 
-    const isLocationAcceptable = areLocationsEqual(location, state.focusedLocation)
-        || (forcedLocation ? areLocationsEqual(location, forcedLocation) : true);
+  const forcedLocation = focusLocation
+    ? state.cellMatrix.getLocationById(focusLocation.rowId, focusLocation.columnId)
+    : undefined;
 
-    if (!isCellTemplateFocusable || !isChangeAllowedByUser || !isLocationAcceptable) {
-        return state;
-    }
+  const isLocationAcceptable =
+    areLocationsEqual(location, state.focusedLocation) ||
+    (forcedLocation ? areLocationsEqual(location, forcedLocation) : true);
 
-    if (onFocusLocationChanged) {
-        onFocusLocationChanged(cellLocation);
-    }
+  if (!isCellTemplateFocusable || !isChangeAllowedByUser || !isLocationAcceptable) {
+    return state;
+  }
 
-    const validatedFocusLocation = state.cellMatrix.validateLocation(location);
+  if (onFocusLocationChanged) {
+    onFocusLocationChanged(cellLocation);
+  }
 
-    if (applyResetSelection) {
-        // TODO is `location` really needed
-        state = resetSelection(
-          state,
-          validatedFocusLocation
-        );
-    }
+  const validatedFocusLocation = state.cellMatrix.validateLocation(location);
 
+  if (applyResetSelection) {
+    // TODO is `location` really needed
+    state = resetSelection(state, validatedFocusLocation);
+  }
 
-    return {
-        ...state,
-        focusedLocation: validatedFocusLocation,
-        contextMenuPosition: { top: -1, left: -1 },
-        currentlyEditedCell: undefined // TODO disable in derived state from props
-    };
+  return {
+    ...state,
+    focusedLocation: validatedFocusLocation,
+    contextMenuPosition: { top: -1, left: -1 },
+    currentlyEditedCell: undefined, // TODO disable in derived state from props
+  };
 }

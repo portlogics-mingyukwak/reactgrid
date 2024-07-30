@@ -1,18 +1,31 @@
 /* eslint-disable @typescript-eslint/no-empty-function */
 import React from "react";
 import {
-    Column, Row, Id, MenuOption, SelectionMode, DropPosition, CellLocation,
-    DefaultCellTypes, CellChange, ReactGridProps, TextCell, NumberCell, CellStyle, HeaderCell, ChevronCell, Range, ReactGridInstance
-} from './../reactgrid';
-import { TestConfig } from './testEnvConfig';
-import '../styles.scss';
-import { FlagCell, FlagCellTemplate } from './flagCell/FlagCellTemplate';
-
+  Column,
+  Row,
+  Id,
+  MenuOption,
+  SelectionMode,
+  DropPosition,
+  CellLocation,
+  DefaultCellTypes,
+  CellChange,
+  ReactGridProps,
+  TextCell,
+  NumberCell,
+  CellStyle,
+  HeaderCell,
+  ChevronCell,
+  Range,
+  ReactGridInstance,
+} from "./../reactgrid";
+import { TestConfig } from "./testEnvConfig";
+import "../styles.scss";
+import { FlagCell, FlagCellTemplate } from "./flagCell/FlagCellTemplate";
 
 type TestGridCells = DefaultCellTypes | FlagCell;
 
 type TestGridRow = Row<TestGridCells>;
-
 
 interface TestGridProps {
   enableSticky?: boolean;
@@ -112,12 +125,8 @@ export const TestGrid: React.FC<TestGridProps> = (props) => {
             validator: (text: string): boolean => true,
           };
 
-        const spannedCells = config.spannedCells?.filter(
-          (sC) => sC.idx === ci && sC.idy === ri
-        )[0];
-        const headerCells = config.headerCells?.filter(
-          (sC) => sC.idx === ci && sC.idy === ri
-        )[0];
+        const spannedCells = config.spannedCells?.filter((sC) => sC.idx === ci && sC.idy === ri)[0];
+        const headerCells = config.headerCells?.filter((sC) => sC.idx === ci && sC.idy === ri)[0];
         if (spannedCells || headerCells) {
           return {
             type: cellType,
@@ -238,12 +247,7 @@ export const TestGrid: React.FC<TestGridProps> = (props) => {
           case 7:
             return {
               type: "flag",
-              groupId:
-                Math.random() < 0.66
-                  ? Math.random() < 0.5
-                    ? "A"
-                    : "B"
-                  : undefined,
+              groupId: Math.random() < 0.66 ? (Math.random() < 0.5 ? "A" : "B") : undefined,
               text: "bra",
             };
           case 8:
@@ -270,11 +274,7 @@ export const TestGrid: React.FC<TestGridProps> = (props) => {
     }))
   );
 
-  const handleColumnResize = (
-    columnId: Id,
-    width: number,
-    selectedColIds: Id[]
-  ) => {
+  const handleColumnResize = (columnId: Id, width: number, selectedColIds: Id[]) => {
     setColumns((prevColumns) => {
       const setColumnWidth = (columnIndex: number) => {
         const resizedColumn = prevColumns[columnIndex];
@@ -284,14 +284,10 @@ export const TestGrid: React.FC<TestGridProps> = (props) => {
       if (selectedColIds.includes(columnId)) {
         const stateColumnIndexes = prevColumns
           .filter((col) => selectedColIds.includes(col.columnId))
-          .map((col) =>
-            prevColumns.findIndex((el) => el.columnId === col.columnId)
-          );
+          .map((col) => prevColumns.findIndex((el) => el.columnId === col.columnId));
         stateColumnIndexes.forEach(setColumnWidth);
       } else {
-        const columnIndex = prevColumns.findIndex(
-          (col) => col.columnId === columnId
-        );
+        const columnIndex = prevColumns.findIndex((col) => col.columnId === columnId);
         setColumnWidth(columnIndex);
       }
       return [...prevColumns];
@@ -301,8 +297,7 @@ export const TestGrid: React.FC<TestGridProps> = (props) => {
   // eslint-disable-next-line
   const handleChangesTest = (changes: CellChange[]) => {
     changes.forEach((change) => {
-      const ax: TextCell["type"] | NumberCell["type"] =
-        Math.random() > 0.5 ? "text" : "number";
+      const ax: TextCell["type"] | NumberCell["type"] = Math.random() > 0.5 ? "text" : "number";
       if (change.newCell.type === ax) {
         console.log(change.newCell.type);
       }
@@ -325,12 +320,8 @@ export const TestGrid: React.FC<TestGridProps> = (props) => {
   const handleChanges = (changes: CellChange<TestGridCells>[]) => {
     setRows((prevRows) => {
       changes.forEach((change) => {
-        const changeRowIdx = prevRows.findIndex(
-          (el) => el.rowId === change.rowId
-        );
-        const changeColumnIdx = columns.findIndex(
-          (el) => el.columnId === change.columnId
-        );
+        const changeRowIdx = prevRows.findIndex((el) => el.rowId === change.rowId);
+        const changeColumnIdx = columns.findIndex((el) => el.columnId === change.columnId);
         if (change.type === "flag") {
           // console.log(change.newCell.text);
         }
@@ -346,56 +337,27 @@ export const TestGrid: React.FC<TestGridProps> = (props) => {
     });
   };
 
-  const reorderArray = <T extends unknown>(
-    arr: T[],
-    idxs: number[],
-    to: number
-  ) => {
-    const movedElements: T[] = arr.filter((_: T, idx: number) =>
-      idxs.includes(idx)
-    );
-    to =
-      Math.min(...idxs) < to
-        ? (to += 1)
-        : (to -= idxs.filter((idx) => idx < to).length);
-    const leftSide: T[] = arr.filter(
-      (_: T, idx: number) => idx < to && !idxs.includes(idx)
-    );
-    const rightSide: T[] = arr.filter(
-      (_: T, idx: number) => idx >= to && !idxs.includes(idx)
-    );
+  const reorderArray = <T extends unknown>(arr: T[], idxs: number[], to: number) => {
+    const movedElements: T[] = arr.filter((_: T, idx: number) => idxs.includes(idx));
+    to = Math.min(...idxs) < to ? (to += 1) : (to -= idxs.filter((idx) => idx < to).length);
+    const leftSide: T[] = arr.filter((_: T, idx: number) => idx < to && !idxs.includes(idx));
+    const rightSide: T[] = arr.filter((_: T, idx: number) => idx >= to && !idxs.includes(idx));
     return [...leftSide, ...movedElements, ...rightSide];
   };
 
-  const handleCanReorderColumns = (
-    targetColumnId: Id,
-    columnIds: Id[],
-    dropPosition: DropPosition
-  ): boolean => {
+  const handleCanReorderColumns = (targetColumnId: Id, columnIds: Id[], dropPosition: DropPosition): boolean => {
     return true;
   };
 
-  const handleCanReorderRows = (
-    targetColumnId: Id,
-    rowIds: Id[],
-    dropPosition: DropPosition
-  ): boolean => {
+  const handleCanReorderRows = (targetColumnId: Id, rowIds: Id[], dropPosition: DropPosition): boolean => {
     // const rowIndex = state.rows.findIndex((row: Row) => row.rowId === targetColumnId);
     // if (rowIndex === 0) return false;
     return true;
   };
 
-  const handleColumnsReorder = (
-    targetColumnId: Id,
-    columnIds: Id[],
-    dropPosition: DropPosition
-  ) => {
-    const to = columns.findIndex(
-      (column: Column) => column.columnId === targetColumnId
-    );
-    const columnIdxs = columnIds.map((id: Id, idx: number) =>
-      columns.findIndex((c: Column) => c.columnId === id)
-    );
+  const handleColumnsReorder = (targetColumnId: Id, columnIds: Id[], dropPosition: DropPosition) => {
+    const to = columns.findIndex((column: Column) => column.columnId === targetColumnId);
+    const columnIdxs = columnIds.map((id: Id, idx: number) => columns.findIndex((c: Column) => c.columnId === id));
     setRows(
       rows.map((row) => ({
         ...row,
@@ -405,16 +367,10 @@ export const TestGrid: React.FC<TestGridProps> = (props) => {
     setColumns(reorderArray(columns, columnIdxs, to));
   };
 
-  const handleRowsReorder = (
-    targetRowId: Id,
-    rowIds: Id[],
-    dropPosition: DropPosition
-  ) => {
+  const handleRowsReorder = (targetRowId: Id, rowIds: Id[], dropPosition: DropPosition) => {
     setRows((prevRows) => {
       const to = rows.findIndex((row) => row.rowId === targetRowId);
-      const columnIdxs = rowIds.map((id) =>
-        rows.findIndex((r) => r.rowId === id)
-      );
+      const columnIdxs = rowIds.map((id) => rows.findIndex((r) => r.rowId === id));
       return reorderArray(prevRows, columnIdxs, to);
     });
   };
@@ -432,11 +388,7 @@ export const TestGrid: React.FC<TestGridProps> = (props) => {
         {
           id: "rowOption",
           label: "Custom menu row option",
-          handler: (
-            selectedRowIds: Id[],
-            selectedColIds: Id[],
-            selectionMode: SelectionMode
-          ) => {},
+          handler: (selectedRowIds: Id[], selectedColIds: Id[], selectionMode: SelectionMode) => {},
         },
       ];
     }
@@ -446,11 +398,7 @@ export const TestGrid: React.FC<TestGridProps> = (props) => {
         {
           id: "columnOption",
           label: "Custom menu column option",
-          handler: (
-            selectedRowIds: Id[],
-            selectedColIds: Id[],
-            selectionMode: SelectionMode
-          ) => {},
+          handler: (selectedRowIds: Id[], selectedColIds: Id[], selectionMode: SelectionMode) => {},
         },
       ];
     }
@@ -459,34 +407,32 @@ export const TestGrid: React.FC<TestGridProps> = (props) => {
       {
         id: "all",
         label: "Custom menu option",
-        handler: (
-          selectedRowIds: Id[],
-          selectedColIds: Id[],
-          selectionMode: SelectionMode
-        ) => {},
+        handler: (selectedRowIds: Id[], selectedColIds: Id[], selectionMode: SelectionMode) => {},
       },
     ];
   };
 
-  const handleFocusLocationChanged = (location: CellLocation): void => { }
+  const handleFocusLocationChanged = (location: CellLocation): void => {};
 
   const handleFocusLocationChanging = (location: CellLocation): boolean => true;
 
-  const handleSelectionChanged = (range: Range[]): void => { }
+  const handleSelectionChanged = (range: Range[]): void => {};
 
   const BANNED_LOCATION = { rowIdx: 5, colIdx: 10 };
 
-  const doesRangeContainLocationByIdx = (range: Range, location: { rowIdx: number, colIdx: number }): boolean => {
-    return location.colIdx >= range.first.column.idx &&
-        location.colIdx <= range.last.column.idx &&
-        location.rowIdx >= range.first.row.idx &&
-        location.rowIdx <= range.last.row.idx;
+  const doesRangeContainLocationByIdx = (range: Range, location: { rowIdx: number; colIdx: number }): boolean => {
+    return (
+      location.colIdx >= range.first.column.idx &&
+      location.colIdx <= range.last.column.idx &&
+      location.rowIdx >= range.first.row.idx &&
+      location.rowIdx <= range.last.row.idx
+    );
   };
 
   const handleSelectionChanging = (ranges: Range[]): boolean => {
     return true;
     // Returns false if any range contains the banned location
-    return !ranges.some(range => doesRangeContainLocationByIdx(range, BANNED_LOCATION));
+    return !ranges.some((range) => doesRangeContainLocationByIdx(range, BANNED_LOCATION));
   };
 
   const handleClearSelections = () => {
@@ -497,101 +443,111 @@ export const TestGrid: React.FC<TestGridProps> = (props) => {
 
   const Component = component;
   return (
-      <>
-          <div className='test-grid-container' data-cy='div-scrollable-element' style={{
-              ...(!config.pinToBody && {
-                  height: config.fillViewport ? `calc(100vh - 30px)` : config.rgViewportHeight,
-                  width: config.fillViewport ? `calc(100vw - 45px)` : config.rgViewportWidth,
-                  margin: config.margin,
-                  overflow: 'auto',
-              }),
-              position: 'relative',
-              ...(config.flexRow && {
-                  display: 'flex',
-                  flexDirection: 'row'
-              }),
-          }}>
-              {config.additionalContent &&
-                  <div style={{ height: `${config.rgViewportHeight}px`, backgroundColor: '#fafff3' }}>
-                      <Logo width={config.rgViewportWidth} />
-                      <Logo width={config.rgViewportWidth} />
-                      <Logo width={config.rgViewportWidth} />
-                  </div>
-              }
-              <button onClick={handleClearSelections}>Clear Selections</button>
-              {render && <Component
-                  ref={reactGridRef}
-                  rows={rows}
-                  columns={columns}
-                  initialFocusLocation={config.initialFocusLocation}
-                  focusLocation={enableFrozenFocus ? config.focusLocation : undefined}
-                  // onCellsChanged={handleChangesTest2} // TODO This handler should be allowed
-                  onCellsChanged={handleChanges}
-                  onColumnResized={handleColumnResize}
-                  customCellTemplates={{ 'flag': new FlagCellTemplate() }}
-                  highlights={config.highlights}
-                  stickyLeftColumns={enableSticky ? config.stickyLeft : undefined}
-                  stickyRightColumns={enableSticky ? config.stickyRight : undefined}
-                  stickyTopRows={enableSticky ? config.stickyTop : undefined}
-                  stickyBottomRows={enableSticky ? config.stickyBottom : undefined}
-                  canReorderColumns={handleCanReorderColumns}
-                  canReorderRows={handleCanReorderRows}
-                  onColumnsReordered={handleColumnsReorder}
-                  onRowsReordered={handleRowsReorder}
-                  onContextMenu={handleContextMenu}
-                  onFocusLocationChanged={handleFocusLocationChanged}
-                  onFocusLocationChanging={handleFocusLocationChanging}
-                  enableRowSelection={enableColumnAndRowSelection || false}
-                  enableColumnSelection={enableColumnAndRowSelection || false}
-                  enableFullWidthHeader={config.enableFullWidthHeader || false}
-                  enableRangeSelection={config.enableRangeSelection}
-                  enableFillHandle={config.enableFillHandle}
-                  enableGroupIdRender={config.enableGroupIdRender}
-                  labels={config.labels}
-                  horizontalStickyBreakpoint={config.horizontalStickyBreakpoint}
-                  verticalStickyBreakpoint={config.verticalStickyBreakpoint}
-                  disableVirtualScrolling={config.disableVirtualScrolling}
-                  onSelectionChanged={handleSelectionChanged}
-                  onSelectionChanging={handleSelectionChanging}
-                  moveRightOnEnter={config.moveRightOnEnter}
-              />}
-              {config.additionalContent &&
-                  <div style={{ height: `${config.rgViewportHeight}px`, backgroundColor: '#fafff3' }}>
-                      <Logo width={config.rgViewportWidth} />
-                      <Logo width={config.rgViewportWidth} />
-                      <Logo width={config.rgViewportWidth} />
-                  </div>
-              }
+    <>
+      <div
+        className="test-grid-container"
+        data-cy="div-scrollable-element"
+        style={{
+          ...(!config.pinToBody && {
+            height: config.fillViewport ? `calc(100vh - 30px)` : config.rgViewportHeight,
+            width: config.fillViewport ? `calc(100vw - 45px)` : config.rgViewportWidth,
+            margin: config.margin,
+            overflow: "auto",
+          }),
+          position: "relative",
+          ...(config.flexRow && {
+            display: "flex",
+            flexDirection: "row",
+          }),
+        }}
+      >
+        {config.additionalContent && (
+          <div style={{ height: `${config.rgViewportHeight}px`, backgroundColor: "#fafff3" }}>
+            <Logo width={config.rgViewportWidth} />
+            <Logo width={config.rgViewportWidth} />
+            <Logo width={config.rgViewportWidth} />
           </div>
-          {!config.fillViewport &&
-                <>
-                    <input type='text' data-cy='outer-input' />
-                    <Logo />
-                </>
-            }
-            <TestGridOptionsSelect></TestGridOptionsSelect>
-            <button onClick={() => {
-                setRender((render) => !render);
-            }}>Mount / Unmount</button>
-            {config.additionalContent &&
-                <>
-                    <h1 style={{ width: 3000 }}>TEXT</h1> Test WITH IT
-                    <h1>TEXT</h1> Test WITH IT
-                    <h1>TEXT</h1> Test WITH IT
-                    <h1>TEXT</h1> Test WITH IT
-                    <h1>TEXT</h1> Test WITH IT
-                    <h1>TEXT</h1> Test WITH IT
-                    <h1>TEXT</h1> Test WITH IT
-                    <h1>TEXT</h1> Test WITH IT
-                    <h1>TEXT</h1> Test WITH IT
-                    <h1>TEXT</h1> Test WITH IT
-                    <h1>TEXT</h1> Test WITH IT
-                    <h1>TEXT</h1> Test WITH IT
-                </>
-            }
+        )}
+        <button onClick={handleClearSelections}>Clear Selections</button>
+        {render && (
+          <Component
+            ref={reactGridRef}
+            rows={rows}
+            columns={columns}
+            initialFocusLocation={config.initialFocusLocation}
+            focusLocation={enableFrozenFocus ? config.focusLocation : undefined}
+            // onCellsChanged={handleChangesTest2} // TODO This handler should be allowed
+            onCellsChanged={handleChanges}
+            onColumnResized={handleColumnResize}
+            customCellTemplates={{ flag: new FlagCellTemplate() }}
+            highlights={config.highlights}
+            stickyLeftColumns={enableSticky ? config.stickyLeft : undefined}
+            stickyRightColumns={enableSticky ? config.stickyRight : undefined}
+            stickyTopRows={enableSticky ? config.stickyTop : undefined}
+            stickyBottomRows={enableSticky ? config.stickyBottom : undefined}
+            canReorderColumns={handleCanReorderColumns}
+            canReorderRows={handleCanReorderRows}
+            onColumnsReordered={handleColumnsReorder}
+            onRowsReordered={handleRowsReorder}
+            onContextMenu={handleContextMenu}
+            onFocusLocationChanged={handleFocusLocationChanged}
+            onFocusLocationChanging={handleFocusLocationChanging}
+            enableRowSelection={enableColumnAndRowSelection || false}
+            enableColumnSelection={enableColumnAndRowSelection || false}
+            enableFullWidthHeader={config.enableFullWidthHeader || false}
+            enableRangeSelection={config.enableRangeSelection}
+            enableFillHandle={config.enableFillHandle}
+            enableGroupIdRender={config.enableGroupIdRender}
+            labels={config.labels}
+            horizontalStickyBreakpoint={config.horizontalStickyBreakpoint}
+            verticalStickyBreakpoint={config.verticalStickyBreakpoint}
+            disableVirtualScrolling={config.disableVirtualScrolling}
+            onSelectionChanged={handleSelectionChanged}
+            onSelectionChanging={handleSelectionChanging}
+            moveRightOnEnter={config.moveRightOnEnter}
+          />
+        )}
+        {config.additionalContent && (
+          <div style={{ height: `${config.rgViewportHeight}px`, backgroundColor: "#fafff3" }}>
+            <Logo width={config.rgViewportWidth} />
+            <Logo width={config.rgViewportWidth} />
+            <Logo width={config.rgViewportWidth} />
+          </div>
+        )}
+      </div>
+      {!config.fillViewport && (
+        <>
+          <input type="text" data-cy="outer-input" />
+          <Logo />
         </>
-    )
-}
+      )}
+      <TestGridOptionsSelect></TestGridOptionsSelect>
+      <button
+        onClick={() => {
+          setRender((render) => !render);
+        }}
+      >
+        Mount / Unmount
+      </button>
+      {config.additionalContent && (
+        <>
+          <h1 style={{ width: 3000 }}>TEXT</h1> Test WITH IT
+          <h1>TEXT</h1> Test WITH IT
+          <h1>TEXT</h1> Test WITH IT
+          <h1>TEXT</h1> Test WITH IT
+          <h1>TEXT</h1> Test WITH IT
+          <h1>TEXT</h1> Test WITH IT
+          <h1>TEXT</h1> Test WITH IT
+          <h1>TEXT</h1> Test WITH IT
+          <h1>TEXT</h1> Test WITH IT
+          <h1>TEXT</h1> Test WITH IT
+          <h1>TEXT</h1> Test WITH IT
+          <h1>TEXT</h1> Test WITH IT
+        </>
+      )}
+    </>
+  );
+};
 
 const Logo: React.FC<{ width?: number }> = ({ width }) => {
   return (
@@ -607,29 +563,18 @@ export const TestGridOptionsSelect: React.FC = () => {
   };
   return (
     <form>
-      <select
-        defaultValue={window.location.pathname}
-        onChange={(event) => navigate(event.target.value)}
-      >
+      <select defaultValue={window.location.pathname} onChange={(event) => navigate(event.target.value)}>
         <option value="/">/</option>
         <option value="/enableHeaders">Enable headers</option>
         <option value="/enableSticky">Enable sticky</option>
         <option value="/enableFrozenFocus">Enable frozen focus</option>
         <option value="/enablePinnedToBody">Enable pinned to body</option>
-        <option value="/enableStickyPinnedToBody">
-          Enable sticky pinned to body
-        </option>
-        <option value="/enableAdditionalContent">
-          Enable additional content
-        </option>
+        <option value="/enableStickyPinnedToBody">Enable sticky pinned to body</option>
+        <option value="/enableAdditionalContent">Enable additional content</option>
         <option value="/enableSymetric">Enable symetric</option>
         <option value="/enableFrozenFocus">Enable frozen focus</option>
-        <option value="/enableResponsiveStickyTopLeft">
-          Enable responsive top and left sticky panes
-        </option>
-        <option value="/enableResponsiveStickyBottomRight">
-          Enable responsive bottom and right sticky panes
-        </option>
+        <option value="/enableResponsiveStickyTopLeft">Enable responsive top and left sticky panes</option>
+        <option value="/enableResponsiveStickyBottomRight">Enable responsive bottom and right sticky panes</option>
         <option value="/enableResponsiveStickyPinnedToBodyTopLeft">
           Enable responsive top and left sticky panes pinned to body
         </option>
@@ -637,15 +582,9 @@ export const TestGridOptionsSelect: React.FC = () => {
           Enable responsive bottom and right sticky panes pinned to body
         </option>
         <option value="/enableSpannedCells">Enable spanned cells</option>
-        <option value="/enableColumnAndRowSelection">
-          Enable column and row selection
-        </option>
-        <option value="/enableColumnAndRowSelectionWithSticky">
-          Enable column and row selection with sticky
-        </option>
-        <option value="/disableVirtualScrolling">
-          Disable virtual scrolling
-        </option>
+        <option value="/enableColumnAndRowSelection">Enable column and row selection</option>
+        <option value="/enableColumnAndRowSelectionWithSticky">Enable column and row selection with sticky</option>
+        <option value="/disableVirtualScrolling">Disable virtual scrolling</option>
       </select>
     </form>
   );
