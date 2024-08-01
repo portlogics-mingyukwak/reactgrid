@@ -21,6 +21,7 @@ export function focusLocation(state: State, location: Location, applyResetSelect
     throw new Error(`"props" field on "state" object should be initiated before possible location focus`);
   }
 
+  // TODO nodeId 같은 row 전체 focus
   const { onFocusLocationChanged, onFocusLocationChanging, focusLocation } = state.props;
 
   const { cell, cellTemplate } = getCompatibleCellAndTemplate(state, location);
@@ -53,9 +54,12 @@ export function focusLocation(state: State, location: Location, applyResetSelect
     state = resetSelection(state, validatedFocusLocation);
   }
 
+  const selectedRowGroups = state.cellMatrix.getSelectedRowsByLocation(validatedFocusLocation);
+
   return {
     ...state,
     focusedLocation: validatedFocusLocation,
+    selectedRowGroups: selectedRowGroups ? [selectedRowGroups] : [],
     contextMenuPosition: { top: -1, left: -1 },
     currentlyEditedCell: undefined, // TODO disable in derived state from props
   };

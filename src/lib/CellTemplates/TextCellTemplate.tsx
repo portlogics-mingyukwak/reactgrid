@@ -83,6 +83,7 @@ export class TextCellTemplate implements CellTemplate<TextCell> {
         className="rg-input"
         ref={(input) => {
           if (input) {
+            // ref가 생기면(focus되면 ref를 쥐어줄 것임) ref.current의 focus(), setSelectionRange() 발동
             input.focus();
             input.setSelectionRange(input.value.length, input.value.length);
           }

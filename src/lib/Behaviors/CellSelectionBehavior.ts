@@ -25,7 +25,7 @@ export class CellSelectionBehavior extends Behavior {
         return selectRange(state, range, false);
       }
     } else if (state.enableRangeSelection && isSelectionKey(event)) {
-      // 커맨드(컨트롤) 키 누르고 불연속적인 여러 셀 선택할 때
+      // 커맨드(컨트롤) 키 누르고 불연속적인 여러 셀 선택할 때 -> 그룹 포커스 어케해야함? 물어봐야함
       const pointedRangeIdx = state.selectedRanges.findIndex((range) => range.contains(location));
       const pointedRange = state.selectedRanges[pointedRangeIdx];
       const { cellTemplate } = getCompatibleCellAndTemplate(state, location);

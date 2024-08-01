@@ -10,6 +10,7 @@ import { isMobileDevice } from "../Functions/isMobileDevice";
 import { FillHandleRangeSelection } from "./FillHandleRangeSelection";
 import { FillHandleRenderer } from "./FillHandleRenderer";
 import { SelectedRanges } from "./SelectedRanges";
+import { SelectedRowGroups } from "./SelectedRowGroups";
 
 export interface PaneProps {
   renderChildren: boolean;
@@ -54,6 +55,7 @@ function shouldMemoPaneGridContent(prevProps: RowsProps, nextProps: RowsProps): 
 }
 
 export const PaneGridContent: React.NamedExoticComponent<RowsProps> = React.memo(
+  // row별로 메모이제이션해서 관리
   ({ range, state, borders, cellRenderer }) => (
     <>
       {range.rows.map((row) => (
@@ -116,6 +118,7 @@ export const Pane: React.FC<PaneProps> = ({ className, style, renderChildren, ch
 };
 
 export const PaneContent: React.FC<PaneContentProps<State>> = (props) => {
+  // 실제 그리드 렌더부
   const { state, range, borders, cellRenderer } = props;
 
   const calculatedRange = range();
@@ -128,6 +131,7 @@ export const PaneContent: React.FC<PaneContentProps<State>> = (props) => {
         !(state.currentlyEditedCell && isMobileDevice()) &&
         calculatedRange.contains(state.focusedLocation) && <CellFocus location={state.focusedLocation} />}
       <SelectedRanges state={state} calculatedRange={calculatedRange} />
+      <SelectedRowGroups state={state} calculatedRange={calculatedRange} />
       <FillHandleRangeSelection state={state} calculatedRange={calculatedRange} />
       <FillHandleRenderer state={state} calculatedRange={calculatedRange} />
     </>

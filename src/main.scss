@@ -136,6 +136,13 @@
                 border-color: $partial-area-border-color;
                 background-color: $partial-area-background-color;
             }
+
+            &.rg-partial-area-selected-row-groups {
+                border-width: $partial-area-selected-border-width;
+                border-style: solid;
+                border-color: rgba($primary-color, 0.5);
+                background-color: rgba($partial-area-background-color, 0.1);
+            }
         }
     }
 

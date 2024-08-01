@@ -83,6 +83,20 @@ export class CellMatrixBuilder implements ICellMatrixBuilder {
     return this;
   }
 
+  fillRowGroups(): CellMatrixBuilder {
+    this.cellMatrix.rowGroups = this.cellMatrix.rows.reduce((acc, row) => {
+      if (row.groupId !== undefined && Number.isInteger(row.groupId)) {
+        // groupId === 0인 경우도 있음
+        if (!acc[row.groupId]) {
+          acc[row.groupId] = [];
+        }
+        acc[row.groupId].push(row);
+      }
+      return acc;
+    }, [] as GridRow[][]);
+    return this;
+  }
+
   setRangesToRenderLookup(): CellMatrixBuilder {
     let rangesToExclude: Range[] = [];
     this.cellMatrix.rows.forEach((row, idy) => {

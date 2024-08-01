@@ -22,14 +22,19 @@ import {
 import { TestConfig } from "./testEnvConfig";
 import "../styles.scss";
 import { FlagCell, FlagCellTemplate } from "./flagCell/FlagCellTemplate";
+import { flattenData } from "./flattenData";
+import portData from "./data.json";
+import { DisabledCell, DisabledCellTemplate } from "./DisabledCellTemplate";
+import { FlattenedDataNode } from "./data";
 
-type TestGridCells = DefaultCellTypes | FlagCell;
+type TestGridCells = DefaultCellTypes | FlagCell | DisabledCell;
 
-type TestGridRow = Row<TestGridCells>;
+export type TestGridRow = Row<TestGridCells>;
 
 interface TestGridProps {
   enableSticky?: boolean;
   enableColumnAndRowSelection?: boolean;
+  enableGroupSelection?: boolean;
   enableFrozenFocus?: boolean;
   firstRowType?: TextCell["type"] | HeaderCell["type"]; // 'text' if undefined
   firstColType?: ChevronCell["type"] | HeaderCell["type"]; // 'chevron' if undefined
@@ -85,6 +90,7 @@ export const TestGrid: React.FC<TestGridProps> = (props) => {
     component,
     enableSticky,
     enableColumnAndRowSelection,
+    enableGroupSelection,
     enableFrozenFocus,
     firstRowType = "text",
     firstColType = "chevron",
@@ -92,6 +98,7 @@ export const TestGrid: React.FC<TestGridProps> = (props) => {
   } = props;
 
   const [render, setRender] = React.useState(true);
+
   const [columns, setColumns] = React.useState(() =>
     new Array(config.columns)
       .fill({ columnId: 0, resizable: true, reorderable: true, width: -1 })
@@ -274,8 +281,14 @@ export const TestGrid: React.FC<TestGridProps> = (props) => {
     }))
   );
 
+  const { rows: portRows, columns: portColumns } = flattenData(portData);
+
+  const [columns2, setColumns2] = React.useState(portColumns);
+
+  const [rows2, setRows2] = React.useState(portRows);
+
   const handleColumnResize = (columnId: Id, width: number, selectedColIds: Id[]) => {
-    setColumns((prevColumns) => {
+    setColumns2((prevColumns) => {
       const setColumnWidth = (columnIndex: number) => {
         const resizedColumn = prevColumns[columnIndex];
         prevColumns[columnIndex] = { ...resizedColumn, width };
@@ -318,7 +331,7 @@ export const TestGrid: React.FC<TestGridProps> = (props) => {
   rows[0].cells.find((cell) => cell.type === "text" && cell.text);
 
   const handleChanges = (changes: CellChange<TestGridCells>[]) => {
-    setRows((prevRows) => {
+    setRows2((prevRows) => {
       changes.forEach((change) => {
         const changeRowIdx = prevRows.findIndex((el) => el.rowId === change.rowId);
         const changeColumnIdx = columns.findIndex((el) => el.columnId === change.columnId);
@@ -358,17 +371,17 @@ export const TestGrid: React.FC<TestGridProps> = (props) => {
   const handleColumnsReorder = (targetColumnId: Id, columnIds: Id[], dropPosition: DropPosition) => {
     const to = columns.findIndex((column: Column) => column.columnId === targetColumnId);
     const columnIdxs = columnIds.map((id: Id, idx: number) => columns.findIndex((c: Column) => c.columnId === id));
-    setRows(
+    setRows2(
       rows.map((row) => ({
         ...row,
         cells: reorderArray(row.cells, columnIdxs, to),
       }))
     );
-    setColumns(reorderArray(columns, columnIdxs, to));
+    setColumns2(reorderArray(columns, columnIdxs, to));
   };
 
   const handleRowsReorder = (targetRowId: Id, rowIds: Id[], dropPosition: DropPosition) => {
-    setRows((prevRows) => {
+    setRows2((prevRows) => {
       const to = rows.findIndex((row) => row.rowId === targetRowId);
       const columnIdxs = rowIds.map((id) => rows.findIndex((r) => r.rowId === id));
       return reorderArray(prevRows, columnIdxs, to);
@@ -472,14 +485,14 @@ export const TestGrid: React.FC<TestGridProps> = (props) => {
         {render && (
           <Component
             ref={reactGridRef}
-            rows={rows}
-            columns={columns}
+            rows={rows2}
+            columns={columns2}
             initialFocusLocation={config.initialFocusLocation}
             focusLocation={enableFrozenFocus ? config.focusLocation : undefined}
             // onCellsChanged={handleChangesTest2} // TODO This handler should be allowed
             onCellsChanged={handleChanges}
             onColumnResized={handleColumnResize}
-            customCellTemplates={{ flag: new FlagCellTemplate() }}
+            customCellTemplates={{ flag: new FlagCellTemplate(), disabled: new DisabledCellTemplate() }}
             highlights={config.highlights}
             stickyLeftColumns={enableSticky ? config.stickyLeft : undefined}
             stickyRightColumns={enableSticky ? config.stickyRight : undefined}
@@ -498,6 +511,7 @@ export const TestGrid: React.FC<TestGridProps> = (props) => {
             enableRangeSelection={config.enableRangeSelection}
             enableFillHandle={config.enableFillHandle}
             enableGroupIdRender={config.enableGroupIdRender}
+            enableGroupSelection={enableGroupSelection || false}
             labels={config.labels}
             horizontalStickyBreakpoint={config.horizontalStickyBreakpoint}
             verticalStickyBreakpoint={config.verticalStickyBreakpoint}
@@ -585,6 +599,7 @@ export const TestGridOptionsSelect: React.FC = () => {
         <option value="/enableColumnAndRowSelection">Enable column and row selection</option>
         <option value="/enableColumnAndRowSelectionWithSticky">Enable column and row selection with sticky</option>
         <option value="/disableVirtualScrolling">Disable virtual scrolling</option>
+        <option value="/portlogicsCustomization">포트로직스 커스텀 버전</option>
       </select>
     </form>
   );

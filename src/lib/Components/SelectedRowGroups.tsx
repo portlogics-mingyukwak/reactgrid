@@ -3,13 +3,12 @@ import { PaneContentChild, Range } from "../../core";
 import { PartialArea } from "./PartialArea";
 import { isRangeIntersects } from "../Functions/isRangeIntersectsWith";
 
-// row/colSelection 말고도 rangeSelection에도 반응하는 함수
-export const SelectedRanges: React.FC<PaneContentChild> = ({ state, calculatedRange }) => {
+// rowGroups에만 반응하는 함수
+export const SelectedRowGroups: React.FC<PaneContentChild> = ({ state, calculatedRange }) => {
   // calculatedRange = 지금 관측 가능한 테이블 영역
-  console.log(state);
   return (
     <>
-      {state.selectedRanges.map(
+      {state.selectedRowGroups.map(
         (range: Range, i: number) =>
           !(
             (
@@ -25,7 +24,7 @@ export const SelectedRanges: React.FC<PaneContentChild> = ({ state, calculatedRa
               key={i}
               pane={calculatedRange}
               range={range}
-              className="rg-partial-area-selected-range"
+              className="rg-partial-area-selected-row-groups"
               style={{}}
             />
           )

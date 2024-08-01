@@ -72,6 +72,8 @@ export interface ReactGridProps {
   readonly enableFullWidthHeader?: boolean;
   /** Set `true` to enable groupId element rendering (by default `false`) */
   readonly enableGroupIdRender?: boolean;
+  /** Set `true` to enable group selection (by default `false`) */
+  readonly enableGroupSelection?: boolean;
   /** Set `true` to disable virtual scrolling (by default `false`) */
   readonly disableVirtualScrolling?: boolean;
   /**
@@ -545,8 +547,6 @@ export interface Cell {
   style?: CellStyle;
   /** Additional CSS classes */
   className?: string;
-  /** Id of node which located in the tree-structure data */
-  nodeId?: Id;
 }
 
 /**
@@ -600,6 +600,11 @@ export interface Row<TCell extends Cell = DefaultCellTypes> {
    * default: `false` (row reorder implementation is on the developer's side)
    */
   readonly reorderable?: boolean;
+  /**
+   * 트리 구조로 데이터를 표현하고 싶을 때 사용하는 프로퍼티.
+   * 여러 row를 하나의 그룹으로 묶기 위해서는 반드시 같은 groupId가 있어야 함
+   */
+  readonly groupId?: number;
 }
 
 /**
