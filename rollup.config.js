@@ -50,6 +50,7 @@ const executeOncePlugins = [
             { src: 'src/test/theming-test.scss', dest: 'dist/test' },
             { src: 'cypress/integration', dest: 'dist/cypress' },
             { src: 'src/test/flagCell/flag-cell-style.scss', dest: 'dist/test/flagCell' },
+            { src: 'src/test/disabledCell/disabled-cell-style.scss', dest: 'dist/test/disabledCell' },
         ]
     }),
 ]

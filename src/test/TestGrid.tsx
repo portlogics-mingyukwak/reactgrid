@@ -24,8 +24,7 @@ import "../styles.scss";
 import { FlagCell, FlagCellTemplate } from "./flagCell/FlagCellTemplate";
 import { flattenData } from "./flattenData";
 import portData from "./data.json";
-import { DisabledCell, DisabledCellTemplate } from "./DisabledCellTemplate";
-import { FlattenedDataNode } from "./data";
+import { DisabledCell, DisabledCellTemplate } from "./disabledCell/DisabledCellTemplate";
 
 type TestGridCells = DefaultCellTypes | FlagCell | DisabledCell;
 
@@ -99,7 +98,7 @@ export const TestGrid: React.FC<TestGridProps> = (props) => {
 
   const [render, setRender] = React.useState(true);
 
-  const [columns, setColumns] = React.useState(() =>
+  const [columns1, setColumns] = React.useState(() =>
     new Array(config.columns)
       .fill({ columnId: 0, resizable: true, reorderable: true, width: -1 })
       .map<Column>((_, ci) => ({
@@ -110,12 +109,12 @@ export const TestGrid: React.FC<TestGridProps> = (props) => {
       }))
   );
 
-  const [rows, setRows] = React.useState(() =>
+  const [rows1, setRows] = React.useState(() =>
     new Array(config.rows).fill(0).map<TestGridRow>((_, ri) => ({
       rowId: `row-${ri}`,
       reorderable: true,
       height: config.cellHeight,
-      cells: columns.map<TestGridCells>((_, ci) => {
+      cells: columns1.map<TestGridCells>((_, ci) => {
         if (ri === 0) return { type: firstRowType, text: `${ri} - ${ci}` };
         if (ri === 2 && ci === 8)
           return {
@@ -287,8 +286,10 @@ export const TestGrid: React.FC<TestGridProps> = (props) => {
 
   const [rows2, setRows2] = React.useState(portRows);
 
+  const [columns, rows] = enableGroupSelection ? [columns2, rows2] : [columns1, rows1];
+
   const handleColumnResize = (columnId: Id, width: number, selectedColIds: Id[]) => {
-    setColumns2((prevColumns) => {
+    setColumns((prevColumns) => {
       const setColumnWidth = (columnIndex: number) => {
         const resizedColumn = prevColumns[columnIndex];
         prevColumns[columnIndex] = { ...resizedColumn, width };
@@ -331,7 +332,7 @@ export const TestGrid: React.FC<TestGridProps> = (props) => {
   rows[0].cells.find((cell) => cell.type === "text" && cell.text);
 
   const handleChanges = (changes: CellChange<TestGridCells>[]) => {
-    setRows2((prevRows) => {
+    setRows((prevRows) => {
       changes.forEach((change) => {
         const changeRowIdx = prevRows.findIndex((el) => el.rowId === change.rowId);
         const changeColumnIdx = columns.findIndex((el) => el.columnId === change.columnId);
@@ -371,17 +372,17 @@ export const TestGrid: React.FC<TestGridProps> = (props) => {
   const handleColumnsReorder = (targetColumnId: Id, columnIds: Id[], dropPosition: DropPosition) => {
     const to = columns.findIndex((column: Column) => column.columnId === targetColumnId);
     const columnIdxs = columnIds.map((id: Id, idx: number) => columns.findIndex((c: Column) => c.columnId === id));
-    setRows2(
+    setRows(
       rows.map((row) => ({
         ...row,
         cells: reorderArray(row.cells, columnIdxs, to),
       }))
     );
-    setColumns2(reorderArray(columns, columnIdxs, to));
+    setColumns(reorderArray(columns, columnIdxs, to));
   };
 
   const handleRowsReorder = (targetRowId: Id, rowIds: Id[], dropPosition: DropPosition) => {
-    setRows2((prevRows) => {
+    setRows((prevRows) => {
       const to = rows.findIndex((row) => row.rowId === targetRowId);
       const columnIdxs = rowIds.map((id) => rows.findIndex((r) => r.rowId === id));
       return reorderArray(prevRows, columnIdxs, to);
@@ -485,8 +486,8 @@ export const TestGrid: React.FC<TestGridProps> = (props) => {
         {render && (
           <Component
             ref={reactGridRef}
-            rows={rows2}
-            columns={columns2}
+            rows={rows}
+            columns={columns}
             initialFocusLocation={config.initialFocusLocation}
             focusLocation={enableFrozenFocus ? config.focusLocation : undefined}
             // onCellsChanged={handleChangesTest2} // TODO This handler should be allowed

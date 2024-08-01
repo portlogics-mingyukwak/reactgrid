@@ -72,6 +72,7 @@ export class ChevronCellTemplate implements CellTemplate<ChevronCell> {
 
   handleCompositionEnd(
     cell: Compatible<ChevronCell>,
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     eventData: any
   ): { cell: Compatible<ChevronCell>; enableEditMode: boolean } {
     return { cell: { ...cell, text: eventData }, enableEditMode: true };

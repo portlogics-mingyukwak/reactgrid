@@ -25,6 +25,7 @@
     "types": [
       "cypress"
     ],
+    "baseUrl": ".",
     "noFallthroughCasesInSwitch": true
   },
   "include": [

@@ -33,12 +33,7 @@ export class Utilities {
     return Cypress.platform === "darwin";
   }
 
-  selectCell(
-    clientX: number,
-    clientY: number,
-    customEventArgs = undefined,
-    useTouch = false
-  ): void {
+  selectCell(clientX: number, clientY: number, customEventArgs?: { [key: string]: boolean }, useTouch = false): void {
     const scrollableElement = this.getScrollableElement();
     if (customEventArgs !== undefined) {
       scrollableElement.trigger("pointerdown", clientX, clientY, {
@@ -72,18 +67,12 @@ export class Utilities {
 
   scrollToBottom(left = 0): void {
     const offset = this.getBottomAddtionalOffset(true);
-    this.scrollTo(
-      left,
-      this.getConfig().rows * this.getConfig().cellHeight + offset
-    );
+    this.scrollTo(left, this.getConfig().rows * this.getConfig().cellHeight + offset);
   }
 
   scrollToRight(top = 0): void {
     const offset = this.getRightAddtionalOffset();
-    this.scrollTo(
-      this.getConfig().columns * this.getConfig().cellWidth + offset,
-      top
-    );
+    this.scrollTo(this.getConfig().columns * this.getConfig().cellWidth + offset, top);
   }
 
   getCellXCenter(): number {
@@ -104,11 +93,7 @@ export class Utilities {
   }
 
   round(value: number, places = 0): number {
-    return +(
-      Math.round((value + "e+" + places) as unknown as number) +
-      "e-" +
-      places
-    );
+    return +(Math.round((value + "e+" + places) as unknown as number) + "e-" + places);
   }
 
   resetSelection(x: number, y: number): void {
@@ -116,12 +101,7 @@ export class Utilities {
     this.selectCell(x, y);
   }
 
-  keyDown(
-    keyCode: number,
-    customEventArgs?: Record<string, unknown>,
-    timeout = 200,
-    log = true
-  ): void {
+  keyDown(keyCode: number, customEventArgs?: Record<string, unknown>, timeout = 200, log = true): void {
     const rg = this.getReactGridContent();
     if (customEventArgs !== undefined) {
       rg.trigger("keydown", { ...customEventArgs, keyCode, log, force: true });
@@ -138,9 +118,7 @@ export class Utilities {
 
   getScrollableElement(): Cypress.Chainable {
     // TODO is Body correct element for getting scroll and sroll view?
-    return this.config.pinToBody
-      ? this.getBody()
-      : this.getDivScrollableElement();
+    return this.config.pinToBody ? this.getBody() : this.getDivScrollableElement();
   }
 
   getDivScrollableElement(): Cypress.Chainable {
@@ -210,69 +188,49 @@ export class Utilities {
     this.getScrollableElement().click(x, y);
   }
 
-  assertElementWidthIsEqual(
-    element: Cypress.Chainable,
-    expectedWidth: number
-  ): void {
+  assertElementWidthIsEqual(element: Cypress.Chainable, expectedWidth: number): void {
     element
       .invoke("css", "width")
       .then((str) => parseInt(str))
       .should("be.eq", expectedWidth);
   }
 
-  assertElementHeightIsEqual(
-    element: Cypress.Chainable,
-    expectedHeight: number
-  ): void {
+  assertElementHeightIsEqual(element: Cypress.Chainable, expectedHeight: number): void {
     element
       .invoke("css", "height")
       .then((str) => parseInt(str))
       .should("be.eq", expectedHeight);
   }
 
-  assertElementTopIsEqual(
-    element: Cypress.Chainable,
-    expectedTop: number
-  ): void {
+  assertElementTopIsEqual(element: Cypress.Chainable, expectedTop: number): void {
     element
       .invoke("css", "top")
       .then((str) => parseInt(str))
       .should("be.eq", expectedTop);
   }
 
-  assertElementBottomIsEqual(
-    element: Cypress.Chainable,
-    expectedBottom: number
-  ): void {
+  assertElementBottomIsEqual(element: Cypress.Chainable, expectedBottom: number): void {
     element
       .invoke("css", "bottom")
       .then((str) => parseInt(str))
       .should("be.eq", expectedBottom);
   }
 
-  assertElementLeftIsEqual(
-    element: Cypress.Chainable,
-    expectedLeft: number
-  ): void {
+  assertElementLeftIsEqual(element: Cypress.Chainable, expectedLeft: number): void {
     element
       .invoke("css", "left")
       .then((str) => parseInt(str))
       .should("be.eq", expectedLeft);
   }
 
-  assertElementRightIsEqual(
-    element: Cypress.Chainable,
-    expectedRight: number
-  ): void {
+  assertElementRightIsEqual(element: Cypress.Chainable, expectedRight: number): void {
     element
       .invoke("css", "right")
       .then((str) => parseInt(str))
       .should("be.eq", expectedRight);
   }
 
-  assertIsElementInScrollable(
-    element: Cypress.Chainable<JQuery<HTMLElement>>
-  ): void {
+  assertIsElementInScrollable(element: Cypress.Chainable<JQuery<HTMLElement>>): void {
     element.then(($el) => {
       const elementRect = $el[0].getBoundingClientRect();
       if (this.config.pinToBody) {
@@ -281,20 +239,11 @@ export class Utilities {
           .then(($e) => {
             this.getReactGrid().then(($reactgrid) => {
               const reactgridRect = $reactgrid[0].getBoundingClientRect();
-              expect(
-                this.round(reactgridRect.y + $el[0].offsetTop + $e)
-              ).to.be.least(this.round($e - 1), "top");
+              expect(this.round(reactgridRect.y + $el[0].offsetTop + $e)).to.be.least(this.round($e - 1), "top");
               cy.document()
                 .its("documentElement")
                 .then(($d) => {
-                  expect(
-                    this.round(
-                      $el[0].offsetTop +
-                        elementRect.height +
-                        reactgridRect.y +
-                        $e
-                    )
-                  ).to.be.most(
+                  expect(this.round($el[0].offsetTop + elementRect.height + reactgridRect.y + $e)).to.be.most(
                     this.round($e + $d.clientHeight) + 1,
                     "bottom"
                   );
@@ -306,20 +255,14 @@ export class Utilities {
           .then(($e) => {
             this.getReactGrid().then(($reactgrid) => {
               const reactgridRect = $reactgrid[0].getBoundingClientRect();
-              expect(
-                this.round(reactgridRect.x + $el[0].offsetLeft + $e)
-              ).to.be.least(this.round($e - 1), "left");
+              expect(this.round(reactgridRect.x + $el[0].offsetLeft + $e)).to.be.least(this.round($e - 1), "left");
               cy.document()
                 .its("documentElement")
                 .then(($d) => {
-                  expect(
-                    this.round(
-                      $el[0].offsetLeft +
-                        elementRect.width +
-                        reactgridRect.x +
-                        $e
-                    )
-                  ).to.be.most(this.round($e + $d.clientWidth) + 1, "right");
+                  expect(this.round($el[0].offsetLeft + elementRect.width + reactgridRect.x + $e)).to.be.most(
+                    this.round($e + $d.clientWidth) + 1,
+                    "right"
+                  );
                 });
             });
           });
@@ -331,20 +274,16 @@ export class Utilities {
           const leftOffset = this.getLeftAddtionalOffset(true);
           const rightOffset = this.getRightAddtionalOffset();
 
-          expect($el[0].offsetTop + topOffset).to.be.least(
-            v.scrollTop - 1,
-            "top"
+          expect($el[0].offsetTop + topOffset).to.be.least(v.scrollTop - 1, "top");
+          expect($el[0].offsetTop + elementRect.height + bottomOffset).to.be.most(
+            v.scrollTop + v.clientHeight + 1,
+            "bottom"
           );
-          expect(
-            $el[0].offsetTop + elementRect.height + bottomOffset
-          ).to.be.most(v.scrollTop + v.clientHeight + 1, "bottom");
-          expect($el[0].offsetLeft + leftOffset).to.be.least(
-            v.scrollLeft - 1,
-            "left"
+          expect($el[0].offsetLeft + leftOffset).to.be.least(v.scrollLeft - 1, "left");
+          expect($el[0].offsetLeft + elementRect.width + rightOffset).to.be.most(
+            v.scrollLeft + v.clientWidth + 1,
+            "right"
           );
-          expect(
-            $el[0].offsetLeft + elementRect.width + rightOffset
-          ).to.be.most(v.scrollLeft + v.clientWidth + 1, "right");
         });
       }
     });
@@ -357,9 +296,7 @@ export class Utilities {
         .then(($e) => {
           this.getReactGrid().then(($reactgrid) => {
             const reactgridRect = $reactgrid[0].getBoundingClientRect();
-            expect(this.round($e), "Scroll top").to.be.most(
-              this.round($e + reactgridRect.y)
-            );
+            expect(this.round($e), "Scroll top").to.be.most(this.round($e + reactgridRect.y));
           });
         });
     } else {
@@ -382,13 +319,8 @@ export class Utilities {
               .its("documentElement")
               .then(($d) => {
                 const expected =
-                  $e -
-                  $d.clientHeight +
-                  reactgridRect.y +
-                  this.getConfig().rows * this.getConfig().cellHeight;
-                expect(this.round($e), "Scroll bottom").to.be.least(
-                  this.round(expected)
-                );
+                  $e - $d.clientHeight + reactgridRect.y + this.getConfig().rows * this.getConfig().cellHeight;
+                expect(this.round($e), "Scroll bottom").to.be.least(this.round(expected));
               });
           });
         });
@@ -431,21 +363,13 @@ export class Utilities {
         .then(($e) => {
           this.getReactGrid().then(($reactgrid) => {
             const reactgridRect = $reactgrid[0].getBoundingClientRect();
-            const expectedValue =
-              this.round(
-                $e + (includeLineWidth ? -this.getConfig().lineWidth : 0)
-              ) + 1;
+            const expectedValue = this.round($e + (includeLineWidth ? -this.getConfig().lineWidth : 0)) + 1;
             cy.document()
               .its("documentElement")
               .then(($d) => {
                 const toBeExpected =
-                  $e -
-                  $d.clientWidth +
-                  reactgridRect.x +
-                  this.getConfig().columns * this.getConfig().cellWidth;
-                expect(expectedValue, "Scroll Right").to.be.least(
-                  this.round(toBeExpected)
-                );
+                  $e - $d.clientWidth + reactgridRect.x + this.getConfig().columns * this.getConfig().cellWidth;
+                expect(expectedValue, "Scroll Right").to.be.least(this.round(toBeExpected));
               });
           });
         });
@@ -454,11 +378,7 @@ export class Utilities {
         const v = $scrollable[0];
         const offset = this.getRightAddtionalOffset();
         const expectedValue =
-          this.round(
-            v.scrollLeft +
-              v.clientWidth +
-              (includeLineWidth ? -this.getConfig().lineWidth : 0)
-          ) + 1;
+          this.round(v.scrollLeft + v.clientWidth + (includeLineWidth ? -this.getConfig().lineWidth : 0)) + 1;
         expect(expectedValue, "Scroll Right").to.be.least(
           this.getConfig().columns * this.getConfig().cellWidth + offset
         );
@@ -474,10 +394,7 @@ export class Utilities {
     if (this.getConfig().pinToBody) {
       const padding = this.getConfig().withDivComponentStyles.padding || 0;
       if (typeof padding === "number") {
-        this.selectCellInEditMode(
-          test.click.x + padding + test.scroll.x,
-          test.click.y + padding + test.scroll.y
-        );
+        this.selectCellInEditMode(test.click.x + padding + test.scroll.x, test.click.y + padding + test.scroll.y);
       } else {
         throw new Error(`Padding should be only an number!`);
       }
@@ -486,9 +403,7 @@ export class Utilities {
     }
   }
 
-  private setScrollValues(
-    testCase: CellEditorTestParams
-  ): CellEditorTestParams {
+  private setScrollValues(testCase: CellEditorTestParams): CellEditorTestParams {
     return {
       ...testCase,
       ...(!testCase.scroll && {
@@ -500,9 +415,7 @@ export class Utilities {
     };
   }
 
-  private moveClickPosByOnePixel(
-    test: CellEditorTestParams
-  ): CellEditorTestParams {
+  private moveClickPosByOnePixel(test: CellEditorTestParams): CellEditorTestParams {
     return {
       ...test,
       click: {
@@ -570,14 +483,8 @@ export class Utilities {
             (!this.getConfig().pinToBody ? 1 : 0),
           0
         );
-        const realLeft = this.round(
-          parseFloat(cellEditor.style.left.replace("px", "")),
-          0
-        );
-        const realTop = this.round(
-          parseFloat(cellEditor.style.top.replace("px", "")),
-          0
-        );
+        const realLeft = this.round(parseFloat(cellEditor.style.left.replace("px", "")), 0);
+        const realTop = this.round(parseFloat(cellEditor.style.top.replace("px", "")), 0);
         expect(expectedLeft).to.be.equal(realLeft, "Left distance");
         expect(expectedTop).to.be.equal(realTop, "Top distance");
       });
@@ -590,10 +497,8 @@ export class Utilities {
       const cellEditor = $c[0];
       this.getReactGrid().then(($r) => {
         const reactgridRect = $r[0].getBoundingClientRect();
-        const isStickyTopClicked =
-          click.y < this.getConfig().stickyTop * this.getConfig().cellHeight;
-        const isStickyLeftClicked =
-          click.x < this.getConfig().stickyLeft * this.getConfig().cellWidth;
+        const isStickyTopClicked = click.y < this.getConfig().stickyTop * this.getConfig().cellHeight;
+        const isStickyLeftClicked = click.x < this.getConfig().stickyLeft * this.getConfig().cellWidth;
         const isLeftScrolled = scroll.x !== 0;
         const isTopScrolled = scroll.y !== 0;
         cy.window().then(($w) => {
@@ -607,9 +512,7 @@ export class Utilities {
             reactgridRect.left +
               scroll.x +
               click.x -
-              (!isStickyLeftClicked && isLeftScrolled
-                ? scroll.x % this.getConfig().cellWidth
-                : 0) -
+              (!isStickyLeftClicked && isLeftScrolled ? scroll.x % this.getConfig().cellWidth : 0) -
               // - (isClickedOnLeftStickyOnPinnedToBody
               //     ? reactgridRect.left + scroll.x - 1
               //     : this.getConfig().cellWidth),
@@ -620,23 +523,15 @@ export class Utilities {
             reactgridRect.top +
               scroll.y +
               click.y -
-              (!isStickyTopClicked && isTopScrolled
-                ? scroll.y % this.getConfig().cellHeight
-                : 0) -
+              (!isStickyTopClicked && isTopScrolled ? scroll.y % this.getConfig().cellHeight : 0) -
               // - (isClickedOnTopStickyOnPinnedToBody
               //     ? reactgridRect.top + scroll.y - 1
               //     : this.getConfig().cellHeight),
               this.getConfig().cellHeight,
             0
           );
-          const actualLeft = this.round(
-            parseFloat(cellEditor.style.left.replace("px", "")),
-            0
-          );
-          const actualTop = this.round(
-            parseFloat(cellEditor.style.top.replace("px", "")),
-            0
-          );
+          const actualLeft = this.round(parseFloat(cellEditor.style.left.replace("px", "")), 0);
+          const actualTop = this.round(parseFloat(cellEditor.style.top.replace("px", "")), 0);
           expect(expectedLeft).to.be.equal(actualLeft, "Left distance");
           expect(expectedTop).to.be.equal(actualTop, "Top distance");
         });
@@ -767,23 +662,18 @@ export class Utilities {
     });
   }
 
-  fillCells(
-    toX: number,
-    toY: number,
-    log = true,
-    customEventArgs?: Record<string, unknown>
-  ) {
+  fillCells(toX: number, toY: number, log = true, customEventArgs?: Record<string, unknown>) {
     this.getFillHandle().trigger("pointerdown", {
       log,
       pointerType: "mouse",
     });
-    this.getReactGridContent().should('be.visible');
+    this.getReactGridContent().should("be.visible");
     this.getReactGridContent().trigger("pointermove", toX, toY, {
       pointerType: "mouse",
       log,
     });
     cy.wait(200, { log });
-    this.getReactGridContent().trigger("pointerup", toX, toY,{
+    this.getReactGridContent().trigger("pointerup", toX, toY, {
       pointerType: "mouse",
       log,
       ...customEventArgs,
@@ -812,12 +702,7 @@ export class Utilities {
     });
   }
 
-  resizeColumn(
-    startX: number,
-    startY: number,
-    distance: number,
-    options?: ResizeParams
-  ) {
+  resizeColumn(startX: number, startY: number, distance: number, options?: ResizeParams) {
     const { log, resizeHandleClickOffset, step, beforePointerUp } = {
       log: false,
       resizeHandleClickOffset: 4, // probably need check
@@ -830,24 +715,16 @@ export class Utilities {
     scrollableElement.then(($el) => {
       const { offsetLeft, offsetTop } = $el[0];
       const body = this.getBody();
-      scrollableElement.trigger(
-        "pointerdown",
-        startX - resizeHandleClickOffset + offsetLeft,
-        startY + offsetTop,
-        { log, pointerType: options?.useTouch ? "touch" : "mouse" }
-      );
-      for (
-        let x = startX;
-        distance < 0 ? x > endingPoint : x < endingPoint;
-        x += distance > 0 ? step : -step
-      ) {
-        body
-          .wait(3, { log: false })
-          .trigger("pointermove", x + offsetLeft, startY + offsetTop, {
-            log,
-            force: true,
-            pointerType: options?.useTouch ? "touch" : "mouse",
-          });
+      scrollableElement.trigger("pointerdown", startX - resizeHandleClickOffset + offsetLeft, startY + offsetTop, {
+        log,
+        pointerType: options?.useTouch ? "touch" : "mouse",
+      });
+      for (let x = startX; distance < 0 ? x > endingPoint : x < endingPoint; x += distance > 0 ? step : -step) {
+        body.wait(3, { log: false }).trigger("pointermove", x + offsetLeft, startY + offsetTop, {
+          log,
+          force: true,
+          pointerType: options?.useTouch ? "touch" : "mouse",
+        });
       }
       this.getLine().should("exist");
       this.resizeHint().should("exist");
@@ -864,32 +741,15 @@ export class Utilities {
     cy.wait(200);
   }
 
-  reorderColumn(
-    startX: number,
-    startY: number,
-    distance: number,
-    step = 5,
-    log = false
-  ) {
+  reorderColumn(startX: number, startY: number, distance: number, step = 5, log = false) {
     const endingPoint = startX + distance;
     const scrollableElement = this.getScrollableElement();
     scrollableElement.then(($el) => {
       const { offsetLeft, offsetTop } = $el[0];
       const body = this.getBody();
-      scrollableElement.trigger(
-        "pointerdown",
-        startX + offsetLeft,
-        startY + offsetTop,
-        { log }
-      );
-      for (
-        let x = startX;
-        distance < 0 ? x > endingPoint : x < endingPoint;
-        x += distance > 0 ? step : -step
-      ) {
-        body
-          .wait(10, { log })
-          .trigger("pointermove", x, startY + (x % 2), { log, force: true });
+      scrollableElement.trigger("pointerdown", startX + offsetLeft, startY + offsetTop, { log });
+      for (let x = startX; distance < 0 ? x > endingPoint : x < endingPoint; x += distance > 0 ? step : -step) {
+        body.wait(10, { log }).trigger("pointermove", x, startY + (x % 2), { log, force: true });
       }
       body.wait(10).trigger("pointerup", {
         clientX: endingPoint,
@@ -902,37 +762,17 @@ export class Utilities {
     cy.wait(200);
   }
 
-  reorderRow(
-    startX: number,
-    startY: number,
-    distance: number,
-    step = 5,
-    log = false
-  ) {
+  reorderRow(startX: number, startY: number, distance: number, step = 5, log = false) {
     const endingPoint = startY + distance;
     const scrollableElement = this.getScrollableElement();
     scrollableElement.then(($el) => {
       const { offsetLeft, offsetTop } = $el[0];
       const body = this.getBody();
-      scrollableElement.trigger(
-        "pointerdown",
-        startX + offsetLeft,
-        startY + offsetTop,
-        { log }
-      );
-      for (
-        let y = startY;
-        distance < 0 ? y > endingPoint : y < endingPoint;
-        y += distance > 0 ? step : -step
-      ) {
+      scrollableElement.trigger("pointerdown", startX + offsetLeft, startY + offsetTop, { log });
+      for (let y = startY; distance < 0 ? y > endingPoint : y < endingPoint; y += distance > 0 ? step : -step) {
         body
           .wait(10, { log })
-          .trigger(
-            "pointermove",
-            startX + (y % 2) + offsetLeft,
-            y + offsetTop,
-            { log, force: true }
-          );
+          .trigger("pointermove", startX + (y % 2) + offsetLeft, y + offsetTop, { log, force: true });
       }
       body.wait(300).trigger("pointerup", {
         clientX: startX,
@@ -945,29 +785,14 @@ export class Utilities {
     cy.wait(200);
   }
 
-  moveCursorHorizontallyOnScrollable(
-    startX: number,
-    startY: number,
-    distance: number,
-    step = 5,
-    log = false
-  ) {
+  moveCursorHorizontallyOnScrollable(startX: number, startY: number, distance: number, step = 5, log = false) {
     const endingPoint = startX + distance;
     const scrollableElement = this.getScrollableElement();
     scrollableElement.then(($el) => {
       const { offsetLeft, offsetTop } = $el[0];
       const body = this.getBody();
-      scrollableElement.trigger(
-        "pointerdown",
-        startX + offsetLeft,
-        startY + offsetTop,
-        { log }
-      );
-      for (
-        let x = startX;
-        distance < 0 ? x > endingPoint : x < endingPoint;
-        x += distance > 0 ? step : -step
-      ) {
+      scrollableElement.trigger("pointerdown", startX + offsetLeft, startY + offsetTop, { log });
+      for (let x = startX; distance < 0 ? x > endingPoint : x < endingPoint; x += distance > 0 ? step : -step) {
         body.trigger("pointermove", x + offsetLeft, startY + offsetTop, {
           log,
         });
@@ -981,22 +806,12 @@ export class Utilities {
     });
   }
 
-  moveCursorVerticallyOnScrollable(
-    startX: number,
-    startY: number,
-    distance: number,
-    step = 5,
-    log = true
-  ) {
+  moveCursorVerticallyOnScrollable(startX: number, startY: number, distance: number, step = 5, log = true) {
     const endingPoint = startY + distance;
     const rg = this.getScrollableElement();
     const body = this.getBody();
     rg.trigger("pointerdown", startX, startY);
-    for (
-      let x = startY;
-      distance < 0 ? x > endingPoint : x < endingPoint;
-      x += distance > 0 ? step : -step
-    ) {
+    for (let x = startY; distance < 0 ? x > endingPoint : x < endingPoint; x += distance > 0 ? step : -step) {
       body.trigger("pointermove", startX, x, { log, force: true });
     }
     body.trigger("pointerup", {
@@ -1007,13 +822,7 @@ export class Utilities {
     });
   }
 
-  swingCursor(
-    startX: number,
-    startY: number,
-    direction: "horizontal" | "vertical",
-    repeations: number,
-    log = false
-  ) {
+  swingCursor(startX: number, startY: number, direction: "horizontal" | "vertical", repeations: number, log = false) {
     for (let i = 0; i < repeations; i++) {
       cy.wait(10, { log });
       const delta = i % 2;

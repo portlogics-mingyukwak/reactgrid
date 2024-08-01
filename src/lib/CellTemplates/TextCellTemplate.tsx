@@ -53,6 +53,7 @@ export class TextCellTemplate implements CellTemplate<TextCell> {
 
   handleCompositionEnd(
     cell: Compatible<TextCell>,
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     eventData: any
   ): { cell: Compatible<TextCell>; enableEditMode: boolean } {
     return { cell: { ...cell, text: eventData }, enableEditMode: true };

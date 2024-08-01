@@ -42,6 +42,7 @@ export class EmailCellTemplate implements CellTemplate<EmailCell> {
 
   handleCompositionEnd(
     cell: Compatible<EmailCell>,
+    // eslint-disable-next-line @typescript-eslint/explicit-module-boundary-types
     eventData: any
   ): { cell: Compatible<EmailCell>; enableEditMode: boolean } {
     return { cell: { ...cell, text: eventData }, enableEditMode: true };
