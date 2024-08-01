@@ -1,6 +1,6 @@
 import * as React from "react";
 
-import "./disabled-cell-style.css";
+import "./disabled-cell-style.scss";
 import {
   Cell,
   CellTemplate,
