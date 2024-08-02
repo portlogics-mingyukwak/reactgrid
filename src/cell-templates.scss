@@ -46,6 +46,12 @@
         font-size: 0.8em;
     }
 
+    &.rg-disabled-cell {
+        background-color: $template-disabled-bg-color;
+        color: $template-disabled-text-color;
+        cursor: not-allowed;
+    }
+
     &.rg-checkbox-cell {
         align-items: center;
         justify-content: center;

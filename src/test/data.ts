@@ -12,5 +12,28 @@ export type FlattenedDataNode = {
         disabled: boolean; // ReactGrid 렌더링용 속성
       }
     | number;
-  groupId: number;
+  groupId: number; // groupId 생성용 필드. 순회돌 때 제거됨
 };
+
+type Rows = [
+  | {
+      rowId: "header";
+      cells: [
+        {
+          type: "header";
+          text: string;
+        }
+      ];
+    }
+  | {
+      rowId: number;
+      groupId: number;
+      cells: [
+        {
+          type: "text";
+          text: string;
+          disabled: boolean;
+        }
+      ];
+    }
+];

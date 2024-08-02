@@ -16,6 +16,7 @@ import {
   NumberCell,
   TimeCell,
   DropdownCell,
+  DisabledCell,
 } from "./../CellTemplates";
 
 import { Range } from "./Range";
@@ -322,7 +323,8 @@ export type DefaultCellTypes =
   | NumberCell
   | TextCell
   | TimeCell
-  | DropdownCell;
+  | DropdownCell
+  | DisabledCell;
 
 /**
  * `CellChange` type is used by `onCellsChanged`. It represents mutually exclusive changes on a single cell.

@@ -6,7 +6,7 @@ import { isRangeIntersects } from "../Functions/isRangeIntersectsWith";
 // row/colSelection 말고도 rangeSelection에도 반응하는 함수
 export const SelectedRanges: React.FC<PaneContentChild> = ({ state, calculatedRange }) => {
   // calculatedRange = 지금 관측 가능한 테이블 영역
-  console.log(state);
+
   return (
     <>
       {state.selectedRanges.map(

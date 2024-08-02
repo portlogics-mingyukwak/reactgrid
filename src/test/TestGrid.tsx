@@ -24,11 +24,11 @@ import "../styles.scss";
 import { FlagCell, FlagCellTemplate } from "./flagCell/FlagCellTemplate";
 import { flattenData } from "./flattenData";
 import portData from "./data.json";
-import { DisabledCell, DisabledCellTemplate } from "./disabledCell/DisabledCellTemplate";
 
-type TestGridCells = DefaultCellTypes | FlagCell | DisabledCell;
+type TestGridCells = DefaultCellTypes | FlagCell;
 
-export type TestGridRow = Row<TestGridCells>;
+type TestGridRow = Row<TestGridCells>;
+export type GridRow = Row<DefaultCellTypes>;
 
 interface TestGridProps {
   enableSticky?: boolean;
@@ -493,7 +493,7 @@ export const TestGrid: React.FC<TestGridProps> = (props) => {
             // onCellsChanged={handleChangesTest2} // TODO This handler should be allowed
             onCellsChanged={handleChanges}
             onColumnResized={handleColumnResize}
-            customCellTemplates={{ flag: new FlagCellTemplate(), disabled: new DisabledCellTemplate() }}
+            customCellTemplates={{ flag: new FlagCellTemplate() }}
             highlights={config.highlights}
             stickyLeftColumns={enableSticky ? config.stickyLeft : undefined}
             stickyRightColumns={enableSticky ? config.stickyRight : undefined}

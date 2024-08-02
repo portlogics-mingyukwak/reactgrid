@@ -1,9 +1,9 @@
 import { Column, Row } from "../core";
 import { DataNode, FlattenedDataNode } from "./data";
-import { TestGridRow } from "./TestGrid";
+import { GridRow } from "./TestGrid";
 
 export function flattenData(data: DataNode[]): {
-  rows: TestGridRow[];
+  rows: GridRow[];
   columns: Column[];
 } {
   const result: FlattenedDataNode[] = [];
@@ -92,9 +92,9 @@ export function flattenData(data: DataNode[]): {
     ),
   };
 
-  const rows: TestGridRow[] = [
+  const rows: GridRow[] = [
     headerRow,
-    ...result.map<TestGridRow>((row, idx) => ({
+    ...result.map<GridRow>((row, idx) => ({
       rowId: idx,
       groupId: row.groupId, // row에 groupId 박아주기 성공. 이제 focusLocation()으로 groupId 추적 가능
       cells: Object.entries(row)
@@ -104,13 +104,11 @@ export function flattenData(data: DataNode[]): {
             return {
               type: value.disabled ? "disabled" : "text",
               text: String(value.value ?? ""),
-              disabled: value.disabled || false,
             };
           } else {
             return {
               type: "text",
               text: String(value ?? ""),
-              disabled: false,
             };
           }
         }),
