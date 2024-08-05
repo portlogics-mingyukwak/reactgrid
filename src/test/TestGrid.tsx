@@ -22,13 +22,10 @@ import {
 import { TestConfig } from "./testEnvConfig";
 import "../styles.scss";
 import { FlagCell, FlagCellTemplate } from "./flagCell/FlagCellTemplate";
-import { flattenData } from "./flattenData";
-import portData from "./data.json";
 
 type TestGridCells = DefaultCellTypes | FlagCell;
 
 type TestGridRow = Row<TestGridCells>;
-export type GridRow = Row<DefaultCellTypes>;
 
 interface TestGridProps {
   enableSticky?: boolean;
@@ -98,7 +95,7 @@ export const TestGrid: React.FC<TestGridProps> = (props) => {
 
   const [render, setRender] = React.useState(true);
 
-  const [columns1, setColumns] = React.useState(() =>
+  const [columns, setColumns] = React.useState(() =>
     new Array(config.columns)
       .fill({ columnId: 0, resizable: true, reorderable: true, width: -1 })
       .map<Column>((_, ci) => ({
@@ -109,12 +106,12 @@ export const TestGrid: React.FC<TestGridProps> = (props) => {
       }))
   );
 
-  const [rows1, setRows] = React.useState(() =>
+  const [rows, setRows] = React.useState(() =>
     new Array(config.rows).fill(0).map<TestGridRow>((_, ri) => ({
       rowId: `row-${ri}`,
       reorderable: true,
       height: config.cellHeight,
-      cells: columns1.map<TestGridCells>((_, ci) => {
+      cells: columns.map<TestGridCells>((_, ci) => {
         if (ri === 0) return { type: firstRowType, text: `${ri} - ${ci}` };
         if (ri === 2 && ci === 8)
           return {
@@ -279,14 +276,6 @@ export const TestGrid: React.FC<TestGridProps> = (props) => {
       }),
     }))
   );
-
-  const { rows: portRows, columns: portColumns } = flattenData(portData);
-
-  const [columns2, setColumns2] = React.useState(portColumns);
-
-  const [rows2, setRows2] = React.useState(portRows);
-
-  const [columns, rows] = enableGroupSelection ? [columns2, rows2] : [columns1, rows1];
 
   const handleColumnResize = (columnId: Id, width: number, selectedColIds: Id[]) => {
     setColumns((prevColumns) => {

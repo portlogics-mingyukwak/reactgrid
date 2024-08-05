@@ -1,6 +1,6 @@
 import { Column, Row } from "../core";
 import { DataNode, FlattenedDataNode } from "./data";
-import { GridRow } from "./TestGrid";
+import { GridRow } from "./PortlogicsTestGrid";
 
 export function flattenData(data: DataNode[]): {
   rows: GridRow[];
@@ -99,10 +99,10 @@ export function flattenData(data: DataNode[]): {
       groupId: row.groupId, // row에 groupId 박아주기 성공. 이제 focusLocation()으로 groupId 추적 가능
       cells: Object.entries(row)
         .filter(([key]) => key !== "groupId") // row에서 groupId 제거 안하면 columns에 없는 값 생김
-        .map(([, value]) => {
+        .map(([, value], index) => {
           if (typeof value === "object" && value !== null && "value" in value) {
             return {
-              type: value.disabled ? "disabled" : "text",
+              type: index === 0 ? "header" : value.disabled ? "disabled" : "text",
               text: String(value.value ?? ""),
             };
           } else {

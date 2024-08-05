@@ -1,6 +1,7 @@
 import * as React from "react";
 import { createRoot } from "react-dom/client";
 import { ExtTestGrid } from "./test/TestGrid";
+import { PortlogicsTestGrid } from "./test/PortlogicsTestGrid";
 import { ReactGrid } from "./lib/Components/ReactGrid";
 import "./test/theming-test.scss";
 import {
@@ -102,8 +103,10 @@ switch (window.location.pathname) {
     ExtTestGrid.displayName = "DisabledVirtualScrolling";
     break;
   case "/portlogicsCustomization":
-    component = <ExtTestGrid component={ReactGrid} config={config} enableColumnAndRowSelection enableGroupSelection />;
-    ExtTestGrid.displayName = "PortlogicsCustomization";
+    component = (
+      <PortlogicsTestGrid component={ReactGrid} config={config} enableColumnAndRowSelection enableGroupSelection />
+    );
+    PortlogicsTestGrid.displayName = "PortlogicsCustomization";
     break;
   default:
     break;
