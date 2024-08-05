@@ -39,6 +39,29 @@ export function focusLocation(state: State, location: Location, applyResetSelect
     areLocationsEqual(location, state.focusedLocation) ||
     (forcedLocation ? areLocationsEqual(location, forcedLocation) : true);
 
+  const validatedFocusLocation = state.cellMatrix.validateLocation(location);
+
+  const selectedRowGroups = state.cellMatrix.getSelectedRowsByLocation(validatedFocusLocation);
+
+  if (cell.type === "disabled") {
+    const editableFocusLocationX =
+      location.row.groupId &&
+      state.cellMatrix.rowGroups[location.row.groupId].find((row) => row.cells[location.column.idx].type !== "disabled")
+        ?.rowId;
+
+    const disabledCellFocusLocation = editableFocusLocationX
+      ? state.cellMatrix.getLocationById(editableFocusLocationX, location.column.columnId)
+      : undefined;
+
+    return {
+      ...state,
+      focusedLocation: disabledCellFocusLocation, // 클릭된 셀의 행에서 동일한 그룹 중 첫번째 disabled가 아닌 셀
+      selectedRanges: [],
+      selectedRowGroups: selectedRowGroups ? [selectedRowGroups] : [],
+      currentlyEditedCell: undefined,
+    };
+  }
+
   if (!isCellTemplateFocusable || !isChangeAllowedByUser || !isLocationAcceptable) {
     return state;
   }
@@ -47,14 +70,10 @@ export function focusLocation(state: State, location: Location, applyResetSelect
     onFocusLocationChanged(cellLocation);
   }
 
-  const validatedFocusLocation = state.cellMatrix.validateLocation(location);
-
   if (applyResetSelection) {
     // TODO is `location` really needed
     state = resetSelection(state, validatedFocusLocation);
   }
-
-  const selectedRowGroups = state.cellMatrix.getSelectedRowsByLocation(validatedFocusLocation);
 
   return {
     ...state,
